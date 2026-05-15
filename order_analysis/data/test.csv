@@ -1,0 +1,6 @@
+"order_id,""person_id"",""order_date"",""status"",""total_amount"",""currency"",""payment_method"",""shipping_method"",""notes"""
+"1001,456,""2023-01-01"",""Delivered"",abc,""USD"",""credit_card"",""standard"",""""  "
+"1002,789,""2023-02-02"",""Pending"",199.99,""USD"",""credit_card""            "
+"1003,123,""2023-03-03"",""Shipped"",299.99,""EUR"",""paypal"",""express"","""""
+"1004,456,""2023-04-04"",""Cancelled"",399.99,""GBP"",""google_pay"",,"""" "
+"1005,789,""2023-05-05"",""Refunded"",499.99,""USD"",""credit_card"",""standard"",""Extra notes here"""
