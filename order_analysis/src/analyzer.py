@@ -178,7 +178,7 @@ class OrderAnalyzer:
                 results.append(result)
             else:
                 error_count += 1
-                
+
         return results, len(results), error_count
 
     def save_results(self, results):
@@ -197,8 +197,3 @@ class OrderAnalyzer:
         df_results.to_csv(output_path, index=False, encoding='utf-8')
 
         self.logger.info(f"Результаты сохранены в: {output_path}")
-
-
-
-
-
