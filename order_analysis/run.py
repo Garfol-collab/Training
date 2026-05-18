@@ -5,9 +5,10 @@ def main():
     # Создаём экземпляр анализатора
     analyzer = OrderAnalyzer()
 
-    # Обрабатываем все файлы
+    # Обрабатываем все файлы и сохраняем результат
     results, processed_count, error_count = analyzer.process_all_files()
-
+    analyzer.save_results(results)
+    
     # Выводим итоговую статистику в консоль
     print("\n" + "="*50)
     print("РЕЗУЛЬТАТЫ ОБРАБОТКИ")

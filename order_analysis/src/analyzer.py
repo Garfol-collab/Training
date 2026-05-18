@@ -66,29 +66,14 @@ class OrderAnalyzer:
             self.logger.error(f"Ошибка при загрузке файла {file_path}: {e}")
         return None
 
-    def filter_delivered_orders(self, df, file_name):
+    def filter_delivered_orders(self, df):
         """Фильтрация заказов со статусом 'Delivered'"""
-        if df is None:
-            return None
-
-        try:
-            filtered_df = df[df[STATUS_COLUMN] == DELIVERED_STATUS]
-            return filtered_df
-        except Exception as e:
-            self.logger.error(
-                f"Ошибка при фильтрации заказов в файле '{file_name}': {str(e)}"
-            )
-            return None
+        filtered_df = df[df[STATUS_COLUMN] == DELIVERED_STATUS]
+        return filtered_df
+        
 
     def calculate_metrics(self, filtered_df):
         """Расчёт метрик: общая выручка, средний чек, количество заказов"""
-        if filtered_df is None or filtered_df.empty:
-            return {
-                'total_revenue': 0,
-                'average_check': 0,
-                'order_count': 0
-            }
-
         total_revenue = filtered_df[TOTAL_AMOUNT_COLUMN].sum()
         order_count = len(filtered_df)
         average_check = filtered_df[TOTAL_AMOUNT_COLUMN].mean()
@@ -115,26 +100,23 @@ class OrderAnalyzer:
         required_columns = [STATUS_COLUMN, TOTAL_AMOUNT_COLUMN]
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
-            self.logger.error(f"Отсутствуют необходимые колонки: {missing_columns} в файле '{file_name}'")
+            self.logger.error(f"Отсутствуют необходимые колонки: {missing_columns} в файле '{file_name}'. Файл будет пропущен.")
             return None, False
 
         # Проверка на нечисловые значения в колонке total_amount
-        try:
-            df[TOTAL_AMOUNT_COLUMN] = pd.to_numeric(df[TOTAL_AMOUNT_COLUMN], errors='coerce')
-            if df[TOTAL_AMOUNT_COLUMN].isna().any():
-                non_numeric_count = df[TOTAL_AMOUNT_COLUMN].isna().sum()
-                self.logger.error(
-                    f"В колонке '{TOTAL_AMOUNT_COLUMN}' обнаружены нечисловые значения "
-                    f"(всего: {non_numeric_count}). Файл '{file_name}' будет пропущен."
-                )
-                return None, False
-        except Exception as e:
-            self.logger.error(f"Ошибка при преобразовании данных в колонке {TOTAL_AMOUNT_COLUMN} файла '{file_name}': {str(e)}")
+        df[TOTAL_AMOUNT_COLUMN] = pd.to_numeric(df[TOTAL_AMOUNT_COLUMN], errors='coerce')
+        if df[TOTAL_AMOUNT_COLUMN].isna().any():
+            non_numeric_count = df[TOTAL_AMOUNT_COLUMN].isna().sum()
+            self.logger.error(
+                f"В колонке '{TOTAL_AMOUNT_COLUMN}' обнаружены нечисловые значения "
+                 f"(всего: {non_numeric_count}). Файл '{file_name}' будет пропущен."
+            )
             return None, False
 
         # Фильтрация доставленных заказов 
-        filtered_df = self.filter_delivered_orders(df, file_name)
+        filtered_df = self.filter_delivered_orders(df)
         if filtered_df is None:
+            self.logger.warning(f"Файл '{file_name}' будет пропущен из-за ошибки фильтрации")
             return None, False
 
         # Расчёт метрик
